@@ -82,11 +82,14 @@ def poster_grid(cards, cols=6, key_prefix="grid"):
 
     rows = (len(cards) + cols - 1) // cols
     idx = 0
+
     for r in range(rows):
         colset = st.columns(cols)
+
         for c in range(cols):
             if idx >= len(cards):
                 break
+
             m = cards[idx]
             idx += 1
 
@@ -95,17 +98,29 @@ def poster_grid(cards, cols=6, key_prefix="grid"):
             poster = m.get("poster_url")
 
             with colset[c]:
-                if poster:
-                    st.image(poster, use_container_width=True)
+
+                # ✅ STRICT validation
+                if isinstance(poster, str) and poster.startswith("http"):
+                    try:
+                        st.image(poster, use_container_width=True)
+                    except:
+                        st.image(
+                            "https://via.placeholder.com/300x450?text=No+Image",
+                            use_container_width=True,
+                        )
                 else:
-                    st.write("🖼️ No poster")
+                    st.image(
+                        "https://via.placeholder.com/300x450?text=No+Image",
+                        use_container_width=True,
+                    )
 
                 if st.button("Open", key=f"{key_prefix}_{r}_{c}_{idx}_{tmdb_id}"):
                     if tmdb_id:
                         goto_details(tmdb_id)
 
                 st.markdown(
-                    f"<div class='movie-title'>{title}</div>", unsafe_allow_html=True
+                    f"<div class='movie-title'>{title}</div>",
+                    unsafe_allow_html=True,
                 )
 
 
